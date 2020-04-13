@@ -1,0 +1,16 @@
+{
+  "name": "texthooker-web",
+  "version": "0.0.1",
+  "description": "Webpage designed for displaying clipboard text",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "lessc": "^1.0.2",
+    "bent": "^7.1.2"
+  },
+  "scripts": {
+    "build": "node compile.js"
+  },
+  "repository": "https://github.com/zacharied/texthooker-web",
+  "license": "MIT"
+}
