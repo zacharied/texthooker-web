@@ -1,0 +1,29 @@
+﻿<!doctype HTML>
+
+<html lang=ja>
+<head>
+	<meta charset="utf-8"></meta>
+	<title>Texthooker</title>
+	<link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+	<!-- Interactable UI / HUD container. -->
+	<div id="container">
+		<div id="line-directions">
+			<span class="label">Line Direction</span>
+			<span class="line-direction-choice" data-direction="up">Up</span>
+			<span class="line-direction-choice" data-direction="down">Down</span>
+		</div>
+		<div id="counter"></div>
+		<div id="remove-button" title="Remove last line">╳</div>
+	</div>
+
+	<!-- Target for inserted text. -->
+	<div id="texthooker"></div>
+
+	<script src="jquery.js"></script>
+	<script src="index.js"></script>
+</body>
+
+</html>
