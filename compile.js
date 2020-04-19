@@ -55,13 +55,20 @@ if (process.argv[2] === '-w') {
 
     let lastTime = new Date().getTime();
 
-    fs.watch('src/', { persistent: true }, (_1, _2) => {
-        let currentTime = new Date().getTime();
-        if (currentTime - lastTime > WATCH_COMPILE_MINIMUM_INTERVAL) {
-            main();
-            lastTime = currentTime;
-        }
-    });
+    let watchDir = (path) => {
+        fs.watch(path, { persistent: true }, (_, filename) => {
+            let currentTime = new Date().getTime();
+            if (currentTime - lastTime > WATCH_COMPILE_MINIMUM_INTERVAL) {
+                console.log(`> File ${filename != null ? `"${filename}"` : `in "${path}"`} was changed.`
+                            + ' Recompiling...');
+                main();
+                lastTime = currentTime;
+            }
+        });
+    };
+
+    watchDir('src');
+    watchDir('src/style');
 } else {
     main();
 }
