@@ -9,7 +9,8 @@
     "bent": "^7.1.2"
   },
   "scripts": {
-    "build": "node compile.js"
+    "build": "node compile.js",
+    "watch": "node compile.js -w"
   },
   "repository": "https://github.com/zacharied/texthooker-web",
   "license": "MIT"

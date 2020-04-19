@@ -10,6 +10,8 @@ const SOURCE_FILETYPES = ['html', 'js'];
 
 const OUT_DIR = `build`;
 
+const WATCH_COMPILE_MINIMUM_INTERVAL = 1000;
+
 async function compileLess() {
     let contents = fs.readFileSync(STYLE_MAIN).toString();
     let output = await less.render(contents, { filename: STYLE_MAIN });
@@ -48,4 +50,18 @@ async function main() {
         runStep(copySources, 'Copying source files')]);
 }
 
-main();
+if (process.argv[2] === '-w') {
+    main();
+
+    let lastTime = new Date().getTime();
+
+    fs.watch('src/', { persistent: true }, (_1, _2) => {
+        let currentTime = new Date().getTime();
+        if (currentTime - lastTime > WATCH_COMPILE_MINIMUM_INTERVAL) {
+            main();
+            lastTime = currentTime;
+        }
+    });
+} else {
+    main();
+}
