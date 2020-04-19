@@ -38,6 +38,8 @@ function changeLineDirection(direction) {
     $(`#line-directions > .choice[data-direction="${options.lineDirection}"]`)
         .addClass('active');
 
+    $('#texthooker').attr('data-line-direction', direction);
+
     updateOptionsStorage();
 }
 
@@ -106,7 +108,18 @@ const observer = new MutationObserver(function(mutationsList, observer) {
         updateCounter();
 
         if (options.lineDirection === 'up') {
-            $('#texthooker > p:last-child').remove().prependTo('#texthooker');
+            if ($('#texthooker > p').length > 1) {
+                let $para = $('#texthooker > p:last-child');
+                let margin = $para.outerHeight(true) - $para.outerHeight(false);
+                let xTranslate = $para.outerHeight(false) + (margin / 2);
+                $para.remove();
+                $('#texthooker > p').animate({
+                    top: `+=${xTranslate}px`
+                }, { complete: () => {
+                    $('#texthooker').prepend($para);
+                    $('#texthooker > p').stop().removeAttr('style');
+                } });
+            }
         } else if (options.lineDirection === 'down') {
             // Some obscene browser shit because making sense is for dweebs
             let b = document.body;
@@ -118,14 +131,6 @@ const observer = new MutationObserver(function(mutationsList, observer) {
             if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
                 window.scrollTo(0, document.body.scrollHeight);
             }
-        }
-
-        // Update the active line class.
-        $('#texthooker > p').removeClass('active-line');
-        if (options.lineDirection === 'up') {
-            $('#texthooker > p:first-child').addClass('active-line');
-        } else if (options.lineDirection === 'down') {
-            $('#texthooker > p:last-child').addClass('active-line');
         }
 
         state.lastLineTime = new Date();

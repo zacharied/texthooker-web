@@ -121,11 +121,14 @@ body {
 #texthooker {
     margin: 26px;
 
-    > p {
-        color: #535353;
+    &[data-line-direction="up"] > p:first-child,
+    &[data-line-direction="down"] > p:last-child {
+        color: #BCBCBC
+    }
 
-        &.active-line {
-            color: #BCBCBC
-        }
+    > p {
+        position: relative;
+
+        color: #535353;
     }
 }
