@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
 
+@color-control-box-size: 8px;
+
 html {
     overflow-y: scroll;
 }
@@ -93,10 +95,37 @@ body {
     }
 }
 
-#texthooker > p {
-    color: #535353;
+#color-control {
+    display: inline-flex;
 
-    &.active-line {
-        color: #BCBCBC
+    > .choice {
+        display: flex;
+        align-items: center;
+
+        > .box {
+            display: inline-block;
+            width: @color-control-box-size;
+            height: @color-control-box-size;
+        }
+
+        &[data-color="light"] > .box {
+            background-color: white;
+        }
+
+        &[data-color="dark"] > .box {
+            background-color: black;
+        }
+    }
+}
+
+#texthooker {
+    margin: 26px;
+
+    > p {
+        color: #535353;
+
+        &.active-line {
+            color: #BCBCBC
+        }
     }
 }
