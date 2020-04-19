@@ -5,9 +5,19 @@ var state = {
     charCount: 0,
     lineCount: 0,
     lastLineTime: new Date(),
+};
+
+var options = {
     lineDirection: 'down',
     activeFont: 'sans'
 };
+
+if (window.localStorage.getItem('options')) {
+    console.log('Restoring previously saved options.');
+    let savedOptions = JSON.parse(window.localStorage.getItem('options'));
+    for (let [k, v] of Object.entries(savedOptions))
+        options[k] = v;
+}
 
 const fontClassName = (font) => `font-${font}`;
 
@@ -16,17 +26,19 @@ function updateCounter(charCount = state.charCount, lineCount = state.lineCount)
 }
 
 function changeLineDirection(direction) {
-    if (state.lineDirection === 'down' && direction === 'up'
-        || state.lineDirection === 'up' && direction === 'down') {
+    if (options.lineDirection === 'down' && direction === 'up'
+        || options.lineDirection === 'up' && direction === 'down') {
         let newBody = $('<div />');	
         $($('#texthooker > p').get().reverse()).each(function(_, e) { newBody.append(e); });
         $('#texthooker').empty().append(newBody.children());
     }
 
-    state.lineDirection = direction;
+    options.lineDirection = direction;
     $('#line-directions > .choice').removeClass('active');
-    $(`#line-directions > .choice[data-direction="${state.lineDirection}"]`)
+    $(`#line-directions > .choice[data-direction="${options.lineDirection}"]`)
         .addClass('active');
+
+    updateOptionsStorage();
 }
 
 function changeFont(font) {
@@ -34,9 +46,15 @@ function changeFont(font) {
         .each(function(_, e) { $('body').removeClass(fontClassName($(e).attr('data-font'))) });
     $('body').addClass(fontClassName(font));
 
-    state.activeFont = font;
+    options.activeFont = font;
     $('#font-control > .choice').removeClass('active');
-    $(`#font-control > .choice[data-font="${state.activeFont}"]`).addClass('active');
+    $(`#font-control > .choice[data-font="${options.activeFont}"]`).addClass('active');
+
+    updateOptionsStorage();
+}
+
+function updateOptionsStorage() {
+    window.localStorage.setItem('options', JSON.stringify(options));
 }
 
 $('#remove-button').on('click', () => {
@@ -46,9 +64,9 @@ $('#remove-button').on('click', () => {
 
     // Get last line.
     let targetElement;
-    if (state.lineDirection === 'down') {
+    if (options.lineDirection === 'down') {
         targetElement = $('#texthooker > p:last-child');
-    } else if (state.lineDirection === 'up') {
+    } else if (options.lineDirection === 'up') {
         targetElement = $('#texthooker > p:first-child');
     } else throw new Error('illegal value for lineDirection');
 
@@ -87,9 +105,9 @@ const observer = new MutationObserver(function(mutationsList, observer) {
         state.charCount += newline.text().length;
         updateCounter();
 
-        if (state.lineDirection === 'up') {
+        if (options.lineDirection === 'up') {
             $('#texthooker > p:last-child').remove().prependTo('#texthooker');
-        } else if (state.lineDirection === 'down') {
+        } else if (options.lineDirection === 'down') {
             // Some obscene browser shit because making sense is for dweebs
             let b = document.body;
             let offset = b.scrollHeight - b.offsetHeight;
@@ -104,9 +122,9 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 
         // Update the active line class.
         $('#texthooker > p').removeClass('active-line');
-        if (state.lineDirection === 'up') {
+        if (options.lineDirection === 'up') {
             $('#texthooker > p:first-child').addClass('active-line');
-        } else if (state.lineDirection === 'down') {
+        } else if (options.lineDirection === 'down') {
             $('#texthooker > p:last-child').addClass('active-line');
         }
 
@@ -127,6 +145,6 @@ $(document).ready(() => {
     // Initialize counter text.
     updateCounter();
 
-    changeLineDirection(state.lineDirection);
-    changeFont(state.activeFont);
+    changeLineDirection(options.lineDirection);
+    changeFont(options.activeFont);
 });
