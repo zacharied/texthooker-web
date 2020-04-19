@@ -5,16 +5,17 @@ var state = {
     charCount: 0,
     lineCount: 0,
     lastLineTime: new Date(),
-    lineDirection: 'down'
+    lineDirection: 'down',
+    activeFont: 'sans'
 };
+
+const fontClassName = (font) => `font-${font}`;
 
 function updateCounter(charCount = state.charCount, lineCount = state.lineCount) {
     $('#counter').text(`${charCount.toLocaleString()}字 / ${lineCount.toLocaleString()}行`);
 }
 
 function changeLineDirection(direction) {
-    if (state.lineDirection === direction) return;
-
     if (state.lineDirection === 'down' && direction === 'up'
         || state.lineDirection === 'up' && direction === 'down') {
         let newBody = $('<div />');	
@@ -23,9 +24,19 @@ function changeLineDirection(direction) {
     }
 
     state.lineDirection = direction;
-    $('#line-directions > .line-direction-choice').removeClass('active');
-    $(`#line-directions > .line-direction-choice[data-direction="${state.lineDirection}"]`)
+    $('#line-directions > .choice').removeClass('active');
+    $(`#line-directions > .choice[data-direction="${state.lineDirection}"]`)
         .addClass('active');
+}
+
+function changeFont(font) {
+    $('#font-control > .choice')
+        .each(function(_, e) { $('body').removeClass(fontClassName($(e).attr('data-font'))) });
+    $('body').addClass(fontClassName(font));
+
+    state.activeFont = font;
+    $('#font-control > .choice').removeClass('active');
+    $(`#font-control > .choice[data-font="${state.activeFont}"]`).addClass('active');
 }
 
 $('#remove-button').on('click', () => {
@@ -50,8 +61,12 @@ $('#remove-button').on('click', () => {
     targetElement.remove();
 });
 
-$('#line-directions').on('click', '.line-direction-choice', function() {
+$('#line-directions').on('click', '.choice', function() {
     changeLineDirection($(this).attr('data-direction'));
+});
+
+$('#font-control').on('click', '.choice', function() {
+    changeFont($(this).attr('data-font'));
 });
 
 const observer = new MutationObserver(function(mutationsList, observer) {
@@ -106,10 +121,12 @@ observer.observe(document.getElementById('texthooker'), {
 });
 
 $(document).ready(() => {
+    // Set upper margin of text so that it doesn't intersect the bar.
+    $('#texthooker').css('margin-top', `+=${$('#container').height()}px`);
+
     // Initialize counter text.
     updateCounter();
 
-    // Set active text direction indicator.
-    $(`#line-directions > .line-direction-choice[data-direction="${state.lineDirection}"]`)
-        .addClass('active');
+    changeLineDirection(state.lineDirection);
+    changeFont(state.activeFont);
 });

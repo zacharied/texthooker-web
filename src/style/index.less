@@ -1,37 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+
 body {
-    padding-top: 20px;
+    margin: 0;
 
     font-size: 25px;
-    font-family: 'Noto Serif CJK JP';
 
     background-color: #303030;
-    color: #BCBCBC;
+    color: rgb(73, 68, 68);
+
+    .font-sans {
+        font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    .font-serif {
+        font-family: 'Noto Serif JP', serif;
+    }
 }
 
 #container {
     position: fixed;
+    top: 0;
+    width: 100%;
+
     display: flex;
+    justify-content: space-around;
     align-items: center;
-
-    padding: 5px 5px;
-    top: 3px;
-    right: 5px;
-
-    background-color: rgba(25, 25, 25, 0.8);
-    border-radius: 3px;
-}
-
-#line-directions {
-    display: inline-block;
 
     font-family: serif;
     font-size: 11pt;
+
+    background-color: rgba(25, 25, 25, 0.8);
+}
+
+.control {
+    display: inline-block;
 
     > .label {
         font-weight: bold;
     }
 
-    > .line-direction-choice {
+    > .choice {
         margin: 0 5px;
         color: rgb(120, 120, 120);
 
@@ -42,6 +51,16 @@ body {
         &:hover {
             background-color: rgb(60, 60, 60);
         }
+    }
+}
+
+#font-control > .choice {
+    &[data-font="sans"] {
+        font-family: 'Noto Sans JP';
+    }
+
+    &[data-font="serif"] {
+        font-family: 'Noto Serif JP';
     }
 }
 

@@ -10,13 +10,21 @@
 <body>
 	<!-- Interactable UI / HUD container. -->
 	<div id="container">
-		<div id="line-directions">
-			<span class="label">Line Direction</span>
-			<span class="line-direction-choice" data-direction="up">Up</span>
-			<span class="line-direction-choice" data-direction="down">Down</span>
+		<div id="font-control" class="control">
+			<span class="label">Font</span>
+			<span class="choice" data-font="sans">あ</span>
+			<span class="choice" data-font="serif">あ</span>
 		</div>
-		<div id="counter"></div>
-		<div id="remove-button" title="Remove last line">╳</div>
+		<div id="line-directions" class="control">
+			<span class="label">Line Direction</span>
+			<span class="choice" data-direction="up">Up</span>
+			<span class="choice" data-direction="down">Down</span>
+		</div>
+		<div id="counter-container">
+			<div id="counter"></div>
+
+			<div id="remove-button" title="Remove last line">╳</div>
+		</div>
 	</div>
 
 	<!-- Target for inserted text. -->
