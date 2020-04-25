@@ -18,11 +18,6 @@ async function compileLess() {
     fs.writeFileSync('build/index.css', output.css);
 }
 
-async function fetchJquery() {
-    let fileContents = await bent('string')('https://code.jquery.com/jquery-3.5.0.min.js');
-    fs.writeFileSync('build/jquery.js', fileContents);
-}
-
 async function copySources() {
     for (let dirent of fs.readdirSync(SOURCE_DIR, { withFileTypes: true })) {
         if (!dirent.isFile() || !SOURCE_FILETYPES.includes(dirent.name.split('.').slice(-1)[0].toLowerCase())) continue;
@@ -46,7 +41,6 @@ async function main() {
 
     await Promise.all([
         runStep(compileLess, 'Compiling styles'),
-        runStep(fetchJquery, 'Downloading JQuery'),
         runStep(copySources, 'Copying source files')]);
 }
 
