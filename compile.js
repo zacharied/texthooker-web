@@ -1,6 +1,5 @@
 const less = require('less');
 const fs = require('fs');
-const bent = require('bent');
 const process = require('process');
 
 const SOURCE_DIR = `src`;
