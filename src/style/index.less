@@ -3,6 +3,8 @@
 
 @color-control-box-size: 8px;
 
+@unit-100: 12px;
+
 html {
     overflow-y: scroll;
 }
@@ -36,37 +38,78 @@ body {
     font-family: serif;
     font-size: 11pt;
 
+    color: #9d9d9d;
     background-color: rgba(25, 25, 25, 0.8);
 }
 
-.control {
-    display: inline-block;
+#controls-container {
+    display: none;
+    position: absolute;
+    z-index: 1;
 
-    > .label {
-        font-weight: bold;
-    }
+    padding: @unit-100;
 
-    > .choice {
-        margin: 0 5px;
-        color: rgb(120, 120, 120);
+    background-color: white;
 
-        &.active {
-            color: rgb(180, 180, 180);
+    border-radius: 5px;
+
+    font-size: 11pt;
+
+    > table#controls {
+        border-spacing: @unit-100 0;
+        td:first-child {
+            font-weight: bold;
+            text-align: right;
         }
 
-        &:hover {
-            background-color: rgb(60, 60, 60);
+        .choices > .choice {
+            margin: 0 5px;
+
+            &.active {
+                text-decoration: underline;
+            }
+
+            &:hover {
+                background-color: rgb(60, 60, 60);
+            }
         }
-    }
-}
 
-#font-control > .choice {
-    &[data-font="sans"] {
-        font-family: 'Noto Sans JP';
-    }
+        .choices-fonts > .choice {
+            &[data-font="sans"] {
+                font-family: 'Noto Sans JP';
+            }
 
-    &[data-font="serif"] {
-        font-family: 'Noto Serif JP';
+            &[data-font="serif"] {
+                font-family: 'Noto Serif JP';
+            }
+        }
+        
+        .choices-colors {
+            display: inline-flex;
+
+            > .choice {
+                display: flex;
+                align-items: center;
+
+                padding: 5px 5px;
+
+                > .box {
+                    display: inline-block;
+                    width: @color-control-box-size;
+                    height: @color-control-box-size;
+
+                    border: 1px gray solid;
+                }
+
+                &[data-color="light"] > .box {
+                    background-color: white;
+                }
+
+                &[data-color="dark"] > .box {
+                    background-color: black;
+                }
+            }
+        }
     }
 }
 
@@ -75,8 +118,6 @@ body {
 
     padding: 8px 5px;
     line-height: 100%;
-
-    color: #9d9d9d;
 }
 
 #remove-button {
@@ -85,36 +126,11 @@ body {
     padding: 8px 5px;
     line-height: 100%;
 
-    color: #9d9d9d;
-
     cursor: hand;
 
     &:hover {
         color: black;
         background-color: rgba(180, 180, 180, 0.8);
-    }
-}
-
-#color-control {
-    display: inline-flex;
-
-    > .choice {
-        display: flex;
-        align-items: center;
-
-        > .box {
-            display: inline-block;
-            width: @color-control-box-size;
-            height: @color-control-box-size;
-        }
-
-        &[data-color="light"] > .box {
-            background-color: white;
-        }
-
-        &[data-color="dark"] > .box {
-            background-color: black;
-        }
     }
 }
 

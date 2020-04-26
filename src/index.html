@@ -9,25 +9,38 @@
 
 <body>
 	<!-- Interactable UI / HUD container. -->
+	<div id="controls-container">
+		<table id="controls">
+			<tr>
+				<td>Color</td>
+				<td class="choices choices-colors">
+					<span class="choice" data-color="light"><span class="box"></span></span>
+					<span class="choice" data-color="dark"><span class="box"></span></span>
+				</td>
+			</tr>
+			<tr>
+				<td>Font</td>
+				<td class="choices choices-fonts">
+					<span class="choice" data-font="sans">あ</span>
+					<span class="choice" data-font="serif">あ</span>
+				</td>
+			</tr>
+			<tr>
+				<td>Line Direction</td>
+				<td class="choices choices-line-directions">
+					<span class="choice" data-direction="up">Up</span>
+					<span class="choice" data-direction="down">Down</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 	<div id="container">
-		<div id="color-control" class="control">
-			<span class="label">Color</span>
-			<span class="choice" data-color="light"><span class="box"></span></span>
-			<span class="choice" data-color="dark"><span class="box"></span></span>
-		</div>
-		<div id="font-control" class="control">
-			<span class="label">Font</span>
-			<span class="choice" data-font="sans">あ</span>
-			<span class="choice" data-font="serif">あ</span>
-		</div>
+		<div id="options-button">Options</div>
+		<div id="title">TextEscort</div>
 		<div id="counter-container">
 			<div id="counter"></div>
 			<div id="remove-button" title="Remove last line">╳</div>
-		</div>
-		<div id="line-directions" class="control">
-			<span class="label">Line Direction</span>
-			<span class="choice" data-direction="up">Up</span>
-			<span class="choice" data-direction="down">Down</span>
 		</div>
 	</div>
 

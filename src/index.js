@@ -41,8 +41,8 @@ function changeLineDirection(direction) {
     }
 
     options.lineDirection = direction;
-    $qsa('#line-directions > .choice').forEach(e => e.classList.remove('active'));
-    $qsa(`#line-directions > .choice[data-direction="${options.lineDirection}"]`)
+    $qsa('.choices-line-directions > .choice').forEach(e => e.classList.remove('active'));
+    $qsa(`.choices-line-directions > .choice[data-direction="${options.lineDirection}"]`)
         .forEach(e => e.classList.add('active'));
 
     $id('texthooker').setAttribute('data-line-direction', direction);
@@ -51,12 +51,12 @@ function changeLineDirection(direction) {
 }
 
 function changeFont(font) {
-    $qsa('#font-control > .choice')
+    $qsa('.choices-fonts > .choice')
         .forEach(e => document.body.classList.remove(fontClassName(e.getAttribute('data-font'))));
 
     options.activeFont = font;
-    $qsa('#font-control > .choice').forEach(e => e.classList.remove('active'));
-    $qsa(`#font-control > .choice[data-font="${options.activeFont}"]`)
+    $qsa('.choices-fonts > .choice').forEach(e => e.classList.remove('active'));
+    $qsa(`.choices-fonts > .choice[data-font="${options.activeFont}"]`)
         .forEach(e => e.classList.add('active'));
 
     updateOptionsStorage();
@@ -87,12 +87,26 @@ $id('remove-button').addEventListener('click', _ => {
     targetElement.remove();
 });
 
-$id('line-directions').addEventListener('click', ev => {
+$qs('.choices-line-directions').addEventListener('click', ev => {
     changeLineDirection(ev.target.getAttribute('data-direction'));
 });
 
-$id('font-control').addEventListener('click', ev => {
+$qs('.choices-fonts').addEventListener('click', ev => {
     changeFont(ev.target.getAttribute('data-font'));
+});
+
+$id('options-button').addEventListener('click', ev => {
+    let $controls = $id('controls-container');
+    let $button = $id('options-button');
+    $controls.style.display = 'inline';
+    $controls.style.left = `${window.scrollX + $button.getBoundingClientRect().left + $button.offsetWidth / 2 - $controls.getBoundingClientRect().width / 2}px`;
+    $controls.style.top = `${window.scrollY + $button.getBoundingClientRect().top + $id('container').clientHeight}px`;
+});
+
+document.addEventListener('click', ev => {
+    if (ev.target.closest('#controls-container') == null && ev.target.id !== 'options-button') {
+        $id('controls-container').style.display = 'none';
+    }
 });
 
 const observer = new MutationObserver(function(mutationsList, observer) {
