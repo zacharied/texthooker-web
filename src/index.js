@@ -34,12 +34,6 @@ function updateCounter(charCount = state.charCount, lineCount = state.lineCount)
 }
 
 function changeLineDirection(direction) {
-    if (options.lineDirection === 'down' && direction === 'up'
-        || options.lineDirection === 'up' && direction === 'down') {
-        [].slice.call($qsa('#texthooker > p')).reverse()
-            .forEach((node, i) => { $id('texthooker').children[i].replaceWith(node); });
-    }
-
     options.lineDirection = direction;
     $qsa('.choices-line-directions > .choice').forEach(e => e.classList.remove('active'));
     $qsa(`.choices-line-directions > .choice[data-direction="${options.lineDirection}"]`)
@@ -136,14 +130,15 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 
         if (options.lineDirection === 'up') {
             if ($qsa('#texthooker > p').length > 1) {
-                let $para = $qs('#texthooker > p:last-child');
-                let xTranslate = $para.offsetHeight;
-                $para.remove();
-                let anim = $id('texthooker').animate([ { transform: `translate(0, ${xTranslate}px)` } ], {
+                // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
+                let $newElem = $qs('#texthooker > p:last-child');
+                let translate = $newElem.offsetHeight;
+                $newElem.remove();
+                let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
                     duration: 400,
                     easing: 'ease-in-out'
                 });
-                anim.onfinish = () => { $id('texthooker').prepend($para); };
+                anim.onfinish = () => { $id('texthooker').append($newElem); };
             }
         } else if (options.lineDirection === 'down') {
             // Some obscene browser shit because making sense is for dweebs

@@ -130,8 +130,17 @@ body {
 #texthooker {
     margin: 26px;
 
-    &[data-line-direction="up"] > p:first-child,
-    &[data-line-direction="down"] > p:last-child {
+    display: flex;
+
+    &[data-line-direction="up"] {
+        flex-direction: column-reverse;
+    }
+
+    &[data-line-direction="down"] {
+        flex-direction: column;
+    }
+
+    > p:last-child {
         color: #BCBCBC
     }
 
