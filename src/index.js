@@ -52,12 +52,14 @@ function changeLineDirection(direction) {
 
 function changeFont(font) {
     $qsa('.choices-fonts > .choice')
-        .forEach(e => document.body.classList.remove(fontClassName(e.getAttribute('data-font'))));
+        .forEach(e => $id('texthooker').classList.remove(fontClassName(e.getAttribute('data-font'))));
 
     options.activeFont = font;
     $qsa('.choices-fonts > .choice').forEach(e => e.classList.remove('active'));
     $qsa(`.choices-fonts > .choice[data-font="${options.activeFont}"]`)
         .forEach(e => e.classList.add('active'));
+    
+    $id('texthooker').classList.add(fontClassName(font));
 
     updateOptionsStorage();
 }
@@ -92,7 +94,8 @@ $qs('.choices-line-directions').addEventListener('click', ev => {
 });
 
 $qs('.choices-fonts').addEventListener('click', ev => {
-    changeFont(ev.target.getAttribute('data-font'));
+    if (ev.target.classList.contains('choice'))
+        changeFont(ev.target.getAttribute('data-font'));
 });
 
 $id('options-button').addEventListener('click', ev => {
