@@ -90,12 +90,15 @@ $id('remove-button').addEventListener('click', _ => {
 });
 
 $qs('.choices-line-directions').addEventListener('click', ev => {
+    if (!ev.target.classList.contains('choice'))
+        return;
     changeLineDirection(ev.target.getAttribute('data-direction'));
 });
 
 $qs('.choices-fonts').addEventListener('click', ev => {
-    if (ev.target.classList.contains('choice'))
-        changeFont(ev.target.getAttribute('data-font'));
+    if (!ev.target.classList.contains('choice'))
+        return;
+    changeFont(ev.target.getAttribute('data-font'));
 });
 
 $id('options-button').addEventListener('click', ev => {
