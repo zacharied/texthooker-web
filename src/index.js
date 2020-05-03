@@ -123,28 +123,31 @@ const observer = new MutationObserver(function(mutationsList, observer) {
         state.charCount += newline.textContent.length;
         updateCounter();
 
-        if (options.lineDirection === 'up') {
-            if ($qsa('#texthooker > p').length > 1) {
-                // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
-                let $newElem = $qs('#texthooker > p:last-child');
-                let translate = $newElem.offsetHeight;
-                $newElem.remove();
-                let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
-                    duration: 400,
-                    easing: 'ease-in-out'
-                });
-                anim.onfinish = () => { $id('texthooker').append($newElem); };
-            }
-        } else if (options.lineDirection === 'down') {
-            // Some obscene browser shit because making sense is for dweebs
-            let b = document.body;
-            let offset = b.scrollHeight - b.offsetHeight;
-            let scrollPos = (b.scrollTop + offset);
-            let scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
+        // Animate addition of the new element.
+        if (!document.hidden) {
+            if (options.lineDirection === 'up') {
+                if ($qsa('#texthooker > p').length > 1) {
+                    // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
+                    let $newElem = $qs('#texthooker > p:last-child');
+                    let translate = $newElem.offsetHeight;
+                    $newElem.remove();
+                    let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
+                        duration: 400,
+                        easing: 'ease-in-out'
+                    });
+                    anim.onfinish = () => { $id('texthooker').append($newElem); };
+                }
+            } else if (options.lineDirection === 'down') {
+                // Some obscene browser shit because making sense is for dweebs
+                let b = document.body;
+                let offset = b.scrollHeight - b.offsetHeight;
+                let scrollPos = (b.scrollTop + offset);
+                let scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
 
-            // If we are at the bottom, go to the bottom again.
-            if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
-                window.scrollTo(0, document.body.scrollHeight);
+                // If we are at the bottom, go to the bottom again.
+                if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
             }
         }
 
