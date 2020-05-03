@@ -33,6 +33,13 @@ body {
 
     color: #9d9d9d;
     background-color: rgba(25, 25, 25, 0.8);
+
+    > #options-button {
+        cursor: pointer;
+        &:hover {
+            text-shadow: 0 0 10px #9d9d9d;
+        }
+    }
 }
 
 #controls-container {
@@ -50,9 +57,19 @@ body {
 
     > table#controls {
         border-spacing: @unit-100 0;
+
         td:first-child {
             font-weight: bold;
             text-align: right;
+        }
+
+        .choice {
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .choices {
+            display: flex;
         }
 
         .choices > .choice {
