@@ -67,12 +67,7 @@ $id('remove-button').addEventListener('click', _ => {
     if ($qsa('#texthooker > p').length < 1) return;
 
     // Get last line.
-    let targetElement;
-    if (options.lineDirection === 'down') {
-        targetElement = $qs('#texthooker > p:last-child');
-    } else if (options.lineDirection === 'up') {
-        targetElement = $qs('#texthooker > p:first-child');
-    } else throw new Error('illegal value for lineDirection');
+    let targetElement = $qs('#texthooker > p:last-child');
 
     // Update the counter.
     state.charCount = state.charCount - targetElement.textContent.length;
