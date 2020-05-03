@@ -64,10 +64,10 @@ function updateOptionsStorage() {
 
 $id('remove-button').addEventListener('click', _ => {
     // Check whether there are any lines.
-    if ($qsa('#texthooker > p').length < 1) return;
+    if ($qsa('#texthooker > .texthooker-line').length < 1) return;
 
     // Get last line.
-    let targetElement = $qs('#texthooker > p:last-child');
+    let targetElement = $qs('#texthooker > .texthooker-line:last-child');
 
     // Update the counter.
     state.charCount = state.charCount - targetElement.textContent.length;
@@ -105,54 +105,56 @@ document.addEventListener('click', ev => {
 });
 
 const observer = new MutationObserver(function(mutationsList, observer) {
-    let lineCount = $qsa('#texthooker > p').length;
+    if ($qs('texthooker > p') == null)
+        return;
 
-    if (lineCount - state.lineCount > 0) {
-        // Lines getting added too quickly usually indicates some weirdness in the user's clipboard.
-        if (new Date().getTime() - state.lastLineTime.getTime() < TIME_BETWEEN_LINES) {
-            $qs('#texthooker > p:last-child').remove();
-            return;
-        }
+    // Lines getting added too quickly usually indicates some weirdness in the user's clipboard.
+    if (new Date().getTime() - state.lastLineTime.getTime() < TIME_BETWEEN_LINES) {
+        $qs('#texthooker > p:last-child').remove();
+        return;
+    }
 
-        // If it is a new line, do a character count of the line and add it to the running tally.
-        let newline = $qs('#texthooker > p:last-child');
-        newline.innerHTML = newline.innerHTML.replace(/<br>/, '\u2002');
+    let $inserted = $qs('#texthooker > p:last-child');
+    let $newline = $id('tmpl-added-line').content.cloneNode(true).querySelector('.texthooker-line');
+    $newline.innerHTML = $inserted.innerHTML.replace(/<br>/, '\u2002');
+    $newline.textContent = $newline.textContent.trim();
+    $inserted.remove();
+    $id('texthooker').appendChild($newline);
 
-        // Print the new counts into the counter.
-        state.lineCount = lineCount;
-        state.charCount += newline.textContent.length;
-        updateCounter();
+    // Print the new counts into the counter.
+    state.lineCount = $qsa('#texthooker > .texthooker-line').length;
+    state.charCount += $newline.textContent.length;
+    updateCounter();
 
-        // Animate addition of the new element.
-        if (!document.hidden) {
-            if (options.lineDirection === 'up') {
-                if ($qsa('#texthooker > p').length > 1) {
-                    // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
-                    let $newElem = $qs('#texthooker > p:last-child');
-                    let translate = $newElem.offsetHeight;
-                    $newElem.remove();
-                    let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
-                        duration: 400,
-                        easing: 'ease-in-out'
-                    });
-                    anim.onfinish = () => { $id('texthooker').append($newElem); };
-                }
-            } else if (options.lineDirection === 'down') {
-                // Some obscene browser shit because making sense is for dweebs
-                let b = document.body;
-                let offset = b.scrollHeight - b.offsetHeight;
-                let scrollPos = (b.scrollTop + offset);
-                let scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
+    // Animate addition of the new element.
+    if (!document.hidden) {
+        if (options.lineDirection === 'up') {
+            if ($qsa('#texthooker > .texthooker-line').length > 1) {
+                // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
+                let $newElem = $qs('#texthooker > .texthooker-line:last-child');
+                let translate = $newElem.offsetHeight;
+                $newElem.remove();
+                let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
+                    duration: 400,
+                    easing: 'ease-in-out'
+                });
+                anim.onfinish = () => { $id('texthooker').append($newElem); };
+            }
+        } else if (options.lineDirection === 'down') {
+            // Some obscene browser shit because making sense is for dweebs
+            let b = document.body;
+            let offset = b.scrollHeight - b.offsetHeight;
+            let scrollPos = (b.scrollTop + offset);
+            let scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
 
-                // If we are at the bottom, go to the bottom again.
-                if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
-                    window.scrollTo(0, document.body.scrollHeight);
-                }
+            // If we are at the bottom, go to the bottom again.
+            if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
+                window.scrollTo(0, document.body.scrollHeight);
             }
         }
-
-        state.lastLineTime = new Date();
     }
+
+    state.lastLineTime = new Date();
 });
 
 observer.observe($id('texthooker'), {

@@ -36,6 +36,8 @@ body {
 
     > #options-button {
         cursor: pointer;
+        user-select: none;
+
         &:hover {
             text-shadow: 0 0 10px #9d9d9d;
         }
@@ -65,7 +67,9 @@ body {
 
         .choice {
             display: inline-block;
+
             cursor: pointer;
+            user-select: none;
         }
 
         .choices {
@@ -157,10 +161,6 @@ body {
         flex-direction: column;
     }
 
-    > p:last-child {
-        color: #BCBCBC
-    }
-
     &.font-sans {
         font-family: 'Noto Sans JP', sans-serif;
     }
@@ -169,7 +169,7 @@ body {
         font-family: 'Noto Serif JP', serif;
     }
 
-    > p {
+    > .texthooker-line {
         margin: 0;
 
         padding: 12px 0;
@@ -177,5 +177,9 @@ body {
         position: relative;
 
         color: #535353;
+
+        &:last-child {
+            color: #BCBCBC
+        }
     }
 }
