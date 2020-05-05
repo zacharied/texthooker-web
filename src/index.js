@@ -105,7 +105,7 @@ document.addEventListener('click', ev => {
 });
 
 const observer = new MutationObserver(function(mutationsList, observer) {
-    if ($qs('texthooker > p') == null)
+    if ($qs('#texthooker > p') == null)
         return;
 
     // Lines getting added too quickly usually indicates some weirdness in the user's clipboard.
