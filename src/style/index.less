@@ -170,16 +170,27 @@ body {
     }
 
     > .texthooker-line {
+        display: flex;
         margin: 0;
 
         padding: 12px 0;
+
+        justify-content: space-between;
 
         position: relative;
 
         color: #535353;
 
-        &:last-child {
+        &:last-child > .line-contents {
             color: #BCBCBC
+        }
+
+        > .line-delete {
+            opacity: 0;
+        }
+
+        &:hover > .line-delete {
+            opacity: 1;
         }
     }
 }

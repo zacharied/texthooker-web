@@ -105,6 +105,15 @@ document.addEventListener('click', ev => {
 });
 
 const observer = new MutationObserver(function(mutationsList, observer) {
+    // Check if a 'p' node was added.
+    if (mutationsList.filter(record => {
+        for (let node of record.addedNodes)
+            if (node.tagName === 'P')
+                return true;
+    }).length === 0) {
+        return;
+    }
+
     if ($qs('#texthooker > p') == null)
         return;
 
@@ -115,9 +124,10 @@ const observer = new MutationObserver(function(mutationsList, observer) {
     }
 
     let $inserted = $qs('#texthooker > p:last-child');
-    let $newline = $id('tmpl-added-line').content.cloneNode(true).querySelector('.texthooker-line');
-    $newline.innerHTML = $inserted.innerHTML.replace(/<br>/, '\u2002');
-    $newline.textContent = $newline.textContent.trim();
+    let $newline = $id('tmpl-added-line').content.cloneNode(true).children[0];
+    let $newlineText = $newline.$qs('.line-contents');
+    $newlineText.innerHTML = $inserted.innerHTML.replace(/<br>/, '\u2002');
+    $newlineText.textContent = $newlineText.textContent.trim();
     $inserted.remove();
     $id('texthooker').appendChild($newline);
 
