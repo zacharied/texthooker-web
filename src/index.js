@@ -104,6 +104,13 @@ document.addEventListener('click', ev => {
     }
 });
 
+function onDeleteLineClicked(deleteButtonNode) {
+    state.charCount -= deleteButtonNode.parentNode.$qs('.line-contents').textContent.length;
+    state.lineCount -= 1;
+    updateCounter();
+    deleteButtonNode.parentNode.remove();
+}
+
 const observer = new MutationObserver(function(mutationsList, observer) {
     // Check if a 'p' node was added.
     if (mutationsList.filter(record => {
