@@ -14,9 +14,18 @@ body {
 
     font-size: 25px;
 
-    background-color: #303030;
-    color: rgb(73, 68, 68);
+    &[data-shade="dark"] {
+        background-color: #303030;
+        color: rgb(73, 68, 68);
 
+        .texthooker-line:last-child {
+            color: rgba(73, 68, 68, 0.5);
+        }
+    }
+
+    &[data-shade="light"] {
+        background-color: #BCBCBC;
+    }
 }
 
 #container {
@@ -98,7 +107,7 @@ body {
             }
         }
         
-        .choices-colors {
+        .choices-shades {
             display: inline-flex;
 
             > .choice {
@@ -115,11 +124,11 @@ body {
                     border: 1px gray solid;
                 }
 
-                &[data-color="light"] > .box {
+                &[data-shade="light"] > .box {
                     background-color: white;
                 }
 
-                &[data-color="dark"] > .box {
+                &[data-shade="dark"] > .box {
                     background-color: black;
                 }
             }
@@ -181,10 +190,6 @@ body {
         position: relative;
 
         color: #535353;
-
-        &:last-child > .line-contents {
-            color: #BCBCBC
-        }
 
         > .line-delete {
             opacity: 0;

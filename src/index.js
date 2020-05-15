@@ -17,7 +17,8 @@ var state = {
 
 var options = {
     lineDirection: 'down',
-    activeFont: 'sans'
+    activeFont: 'sans',
+    shade: 'dark'
 };
 
 if (window.localStorage.getItem('options')) {
@@ -58,6 +59,13 @@ function changeFont(font) {
     updateOptionsStorage();
 }
 
+function changeShade(shade) {
+    options.shade = shade;
+    $qs('body').setAttribute('data-shade', shade);
+
+    updateOptionsStorage();
+}
+
 function updateOptionsStorage() {
     window.localStorage.setItem('options', JSON.stringify(options));
 }
@@ -88,6 +96,13 @@ $qs('.choices-fonts').addEventListener('click', ev => {
     if (!ev.target.classList.contains('choice'))
         return;
     changeFont(ev.target.getAttribute('data-font'));
+});
+
+$qs('.choices-shades').addEventListener('click', ev => {
+    let $choice = ev.target.closest('.choice');
+    if ($choice == null)
+        return;
+    changeShade($choice.getAttribute('data-shade'));
 });
 
 $id('options-button').addEventListener('click', ev => {
@@ -193,4 +208,5 @@ document.onreadystatechange = ev => {
 
     changeLineDirection(options.lineDirection);
     changeFont(options.activeFont);
+    changeShade(options.shade);
 };
