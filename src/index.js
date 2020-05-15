@@ -60,7 +60,10 @@ function changeFont(font) {
 }
 
 function changeShade(shade) {
+    $qsa('.choices-shades > .choice').forEach(e => e.classList.remove('active'));
+
     options.shade = shade;
+    $qs(`.choices-shades > .choice[data-shade="${options.shade}"]`).classList.add('active');
     $qs('body').setAttribute('data-shade', shade);
 
     updateOptionsStorage();
