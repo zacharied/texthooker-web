@@ -5,7 +5,7 @@ const $id = id => document.getElementById(id);
 const $qs = selector => document.querySelector(selector);
 const $qsa = selector => document.querySelectorAll(selector);
 const $ce = tagName => document.createElement(tagName);
-const $style = elem => getComputedStyle(elem);
+const $style = (elem, pseudo) => getComputedStyle(elem, pseudo);
 Element.prototype.$qs = function(selector) { return this.querySelector(selector) };
 Element.prototype.$qsa = function(selector) { return this.querySelectorAll(selector) };
 
@@ -120,12 +120,25 @@ $qs('.vertical-scroll-toggle').addEventListener('change', ev => {
     options.allowVerticalScroll = ev.target.checked;
 });
 
+// TODO Fix this hack somehow.
+var origMarginLeft = null;
 $id('options-button').addEventListener('click', ev => {
     let $controls = $id('controls-container');
     let $button = $id('options-button');
     $controls.style.display = 'inline';
     $controls.style.left = `${window.scrollX + $button.getBoundingClientRect().left + $button.offsetWidth / 2 - $controls.getBoundingClientRect().width / 2}px`;
-    $controls.style.top = `${window.scrollY + $button.getBoundingClientRect().top + $id('container').clientHeight}px`;
+    if (parseInt($controls.style.left) < 0) {
+        let diff = -parseInt($controls.style.left) + parseInt($style($controls).paddingLeft);
+        $controls.style.left = `${parseInt($controls.style.left) + diff}px`;
+        let $afterStyle = getComputedStyle($controls, ':after');
+
+        // TODO Fix this awfulness.
+        if (!origMarginLeft)
+            origMarginLeft = parseInt($afterStyle.getPropertyValue('margin-left'));
+        let $tempStyle = document.head.appendChild($ce('style'));
+        $tempStyle.innerHTML = `#controls-container:after { margin-left: ${origMarginLeft - diff}px }`;
+    }
+    $controls.style.top = `${window.scrollY + $button.getBoundingClientRect().top + $id('container').clientHeight + (origMarginLeft ? -origMarginLeft : 0)}px`;
 });
 
 document.addEventListener('click', ev => {

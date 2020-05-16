@@ -80,6 +80,20 @@ body {
 
     font-size: 11pt;
 
+    &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border: 12px solid transparent;
+        border-bottom-color: $background-color;
+        border-top: 0;
+        margin-left: -12px;
+        margin-top: -12px;
+    }
+
     > table#controls {
         border-spacing: @unit-100 0;
 
