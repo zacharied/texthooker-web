@@ -202,13 +202,21 @@ body {
 
     display: flex;
 
-    .text-horizontal {
+    &[data-line-direction="up"] {
         .texthooker-line {
             padding: @line-spacing 0;
         } 
+        flex-direction: column-reverse;
     }
 
-    .text-vertical {
+    &[data-line-direction="down"] {
+        .texthooker-line {
+            padding: @line-spacing 0;
+        } 
+        flex-direction: column;
+    }
+
+    &[data-line-direction="left"] {
         .texthooker-line {
             // TODO Fix this hackiness.
             max-height: calc(~'100% - 52px');
@@ -217,25 +225,18 @@ body {
             writing-mode: vertical-rl;
             text-orientation: upright;
         } 
-    }
-
-    &[data-line-direction="up"] {
-        &:extend(.text-horizontal);
-        flex-direction: column-reverse;
-    }
-
-    &[data-line-direction="down"] {
-        &:extend(.text-horizontal);
-        flex-direction: column;
-    }
-
-    &[data-line-direction="left"] {
-        &:extend(.text-vertical);
         flex-direction: row-reverse;
     }
 
     &[data-line-direction="right"] {
-        &:extend(.text-vertical);
+        .texthooker-line {
+            // TODO Fix this hackiness.
+            max-height: calc(~'100% - 52px');
+            padding: 0 @line-spacing;
+
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        } 
         flex-direction: row;
     }
 
