@@ -16,15 +16,26 @@ body {
 
     &[data-shade="dark"] {
         background-color: #303030;
-        color: rgb(73, 68, 68);
 
-        .texthooker-line:last-child {
-            color: rgba(73, 68, 68, 0.5);
+        #texthooker {
+            color: rgb(200, 200, 200, 0.5);
+
+            .texthooker-line:last-child {
+                color: rgba(200, 200, 200, 0.9) !important;
+            }
         }
     }
 
     &[data-shade="light"] {
         background-color: #BCBCBC;
+
+        #texthooker {
+            color: rgba(0, 0, 0, 0.5);
+
+            .texthooker-line:last-child {
+                color: rgba(0, 0, 0, 0.9) !important;
+            }
+        }
     }
 }
 
