@@ -17,6 +17,7 @@ var state = {
 
 var options = {
     lineDirection: 'down',
+    allowVerticalScroll: true,
     activeFont: 'sans',
     shade: 'dark'
 };
@@ -41,6 +42,13 @@ function changeLineDirection(direction) {
         .forEach(e => e.classList.add('active'));
 
     $id('texthooker').setAttribute('data-line-direction', direction);
+
+    let $verticalScrollControl = $qs('.control-vertical-scroll');
+    if (options.lineDirection === 'right' || options.lineDirection === 'left') {
+        $verticalScrollControl.style.visibility = 'visible';
+    } else {
+        $verticalScrollControl.style.visibility = 'collapse';
+    }
 
     updateOptionsStorage();
 }
@@ -108,6 +116,10 @@ $qs('.choices-shades').addEventListener('click', ev => {
     changeShade($choice.getAttribute('data-shade'));
 });
 
+$qs('.vertical-scroll-toggle').addEventListener('change', ev => {
+    options.allowVerticalScroll = ev.target.checked;
+});
+
 $id('options-button').addEventListener('click', ev => {
     let $controls = $id('controls-container');
     let $button = $id('options-button');
@@ -119,6 +131,15 @@ $id('options-button').addEventListener('click', ev => {
 document.addEventListener('click', ev => {
     if (ev.target.closest('#controls-container') == null && ev.target.id !== 'options-button') {
         $id('controls-container').style.display = 'none';
+    }
+});
+
+// Allow for a vertical scrollwheel to scroll horizontally when in vertical text layouts.
+document.scrollingElement.addEventListener('wheel', ev => {
+    if ((options.lineDirection === 'left' || options.lineDirection === 'right') && ev.deltaY) {
+        // TODO Allow customization.
+        ev.currentTarget.scrollLeft += ev.deltaY * 30;
+        ev.preventDefault();
     }
 });
 
@@ -161,32 +182,10 @@ const observer = new MutationObserver(function(mutationsList, observer) {
     state.charCount += $newline.$qs('.line-contents').textContent.length;
     updateCounter();
 
-    // Animate addition of the new element.
-    if (!document.hidden) {
-        if (options.lineDirection === 'up') {
-            if ($qsa('#texthooker > .texthooker-line').length > 1) {
-                // Remove the element to hide it while we scroll the text downwards, then append it back to "show" it.
-                let $newElem = $qs('#texthooker > .texthooker-line:last-child');
-                let translate = $newElem.offsetHeight;
-                $newElem.remove();
-                let anim = $id('texthooker').animate([ { transform: `translate(0, ${translate}px)` } ], {
-                    duration: 400,
-                    easing: 'ease-in-out'
-                });
-                anim.onfinish = () => { $id('texthooker').append($newElem); };
-            }
-        } else if (options.lineDirection === 'down') {
-            // Some obscene browser shit because making sense is for dweebs
-            let b = document.body;
-            let offset = b.scrollHeight - b.offsetHeight;
-            let scrollPos = (b.scrollTop + offset);
-            let scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
-
-            // If we are at the bottom, go to the bottom again.
-            if (scrollPos >= scrollBottom - BOTTOM_SCROLL_LEEWAY) {
-                window.scrollTo(0, document.body.scrollHeight);
-            }
-        }
+    if (options.lineDirection === 'down') {
+        window.scrollTo(0, document.body.scrollHeight);
+    } else if (options.lineDirection === 'right') {
+        window.scrollTo(document.body.scrollWidth, 0);
     }
 
     state.lastLineTime = new Date();
@@ -212,4 +211,5 @@ document.onreadystatechange = ev => {
     changeLineDirection(options.lineDirection);
     changeFont(options.activeFont);
     changeShade(options.shade);
+    $qs('.vertical-scroll-toggle').checked = options.allowVerticalScroll;
 };

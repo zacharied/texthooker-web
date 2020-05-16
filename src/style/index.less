@@ -5,6 +5,8 @@
 
 @unit-100: 12px;
 
+@line-spacing: @unit-100;
+
 html {
     overflow-y: scroll;
 }
@@ -186,12 +188,41 @@ body {
 
     display: flex;
 
+    .text-horizontal {
+        .texthooker-line {
+            padding: @line-spacing 0;
+        } 
+    }
+
+    .text-vertical {
+        .texthooker-line {
+            // TODO Fix this hackiness.
+            max-height: calc(~'100% - 52px');
+            padding: 0 @line-spacing;
+
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        } 
+    }
+
     &[data-line-direction="up"] {
+        &:extend(.text-horizontal);
         flex-direction: column-reverse;
     }
 
     &[data-line-direction="down"] {
+        &:extend(.text-horizontal);
         flex-direction: column;
+    }
+
+    &[data-line-direction="left"] {
+        &:extend(.text-vertical);
+        flex-direction: row-reverse;
+    }
+
+    &[data-line-direction="right"] {
+        &:extend(.text-vertical);
+        flex-direction: row;
     }
 
     &.font-sans {
