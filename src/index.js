@@ -81,7 +81,7 @@ $id('remove-button').addEventListener('click', _ => {
     let targetElement = $qs('#texthooker > .texthooker-line:last-child');
 
     // Update the counter.
-    state.charCount = state.charCount - targetElement.textContent.length;
+    state.charCount = state.charCount - targetElement.$qs('.line-contents').textContent.length;
     state.lineCount = state.lineCount - 1;
     updateCounter();
 
@@ -158,7 +158,7 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 
     // Print the new counts into the counter.
     state.lineCount = $qsa('#texthooker > .texthooker-line').length;
-    state.charCount += $newline.textContent.length;
+    state.charCount += $newline.$qs('.line-contents').textContent.length;
     updateCounter();
 
     // Animate addition of the new element.
