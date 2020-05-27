@@ -68,9 +68,10 @@ body {
 }
 
 #controls-container {
-    display: none;
+    display: inline;
     position: absolute;
     z-index: 1;
+    visibility: collapse;
 
     padding: @unit-100;
 
@@ -79,6 +80,9 @@ body {
     border-radius: 5px;
 
     font-size: 11pt;
+
+    animation: pop-in 1s;
+    animation-fill-mode: forwards;
 
     &:after {
         content: '';

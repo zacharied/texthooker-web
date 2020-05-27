@@ -125,7 +125,7 @@ var origMarginLeft = null;
 $id('options-button').addEventListener('click', ev => {
     let $controls = $id('controls-container');
     let $button = $id('options-button');
-    $controls.style.display = 'inline';
+    $controls.style.visibility = 'visible';
     $controls.style.left = `${window.scrollX + $button.getBoundingClientRect().left + $button.offsetWidth / 2 - $controls.getBoundingClientRect().width / 2}px`;
     if (parseInt($controls.style.left) < 0) {
         let diff = -parseInt($controls.style.left) + parseInt($style($controls).paddingLeft);
@@ -143,7 +143,7 @@ $id('options-button').addEventListener('click', ev => {
 
 document.addEventListener('click', ev => {
     if (ev.target.closest('#controls-container') == null && ev.target.id !== 'options-button') {
-        $id('controls-container').style.display = 'none';
+        $id('controls-container').style.visibility = 'collapse';
     }
 });
 
