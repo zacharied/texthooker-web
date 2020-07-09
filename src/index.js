@@ -1,5 +1,6 @@
 const BOTTOM_SCROLL_LEEWAY = 200;
 const TIME_BETWEEN_LINES = 200;
+const STORAGE_KEY_TEXT = 'texthookerContent';
 
 const $id = id => document.getElementById(id);
 const $qs = selector => document.querySelector(selector);
@@ -163,6 +164,20 @@ function onDeleteLineClicked(deleteButtonNode) {
     deleteButtonNode.parentNode.remove();
 }
 
+/** Adds a new text line element to the end of the texthooker output. */
+function addLine(lineText) {
+    let $newline = $id('tmpl-added-line').content.cloneNode(true).children[0];
+    let $newlineText = $newline.$qs('.line-contents');
+    $newlineText.innerHTML = lineText.replace(/<br>/, '\u2002');
+    $newlineText.textContent = $newlineText.textContent.trim();
+    $id('texthooker').appendChild($newline);
+
+    // Print the new counts into the counter.
+    state.lineCount = $qsa('#texthooker > .texthooker-line').length;
+    state.charCount += $newline.$qs('.line-contents').textContent.length;
+    updateCounter();
+}
+
 const observer = new MutationObserver(function(mutationsList, observer) {
     // Check if a 'p' node was added.
     if (mutationsList.filter(record => {
@@ -183,17 +198,9 @@ const observer = new MutationObserver(function(mutationsList, observer) {
     }
 
     let $inserted = $qs('#texthooker > p:last-child');
-    let $newline = $id('tmpl-added-line').content.cloneNode(true).children[0];
-    let $newlineText = $newline.$qs('.line-contents');
-    $newlineText.innerHTML = $inserted.innerHTML.replace(/<br>/, '\u2002');
-    $newlineText.textContent = $newlineText.textContent.trim();
+    const lineText = $inserted.textContent;
+    addLine(lineText);
     $inserted.remove();
-    $id('texthooker').appendChild($newline);
-
-    // Print the new counts into the counter.
-    state.lineCount = $qsa('#texthooker > .texthooker-line').length;
-    state.charCount += $newline.$qs('.line-contents').textContent.length;
-    updateCounter();
 
     if (options.lineDirection === 'down') {
         window.scrollTo(0, document.body.scrollHeight);
@@ -202,6 +209,13 @@ const observer = new MutationObserver(function(mutationsList, observer) {
     }
 
     state.lastLineTime = new Date();
+
+    // Save to local storage.
+    let savedLines = JSON.parse(window.localStorage.getItem(STORAGE_KEY_TEXT));
+    if (savedLines == null)
+        savedLines = [];
+    savedLines.push(lineText);
+    window.localStorage.setItem(STORAGE_KEY_TEXT, JSON.stringify(savedLines));
 });
 
 observer.observe($id('texthooker'), {
@@ -225,4 +239,10 @@ document.onreadystatechange = ev => {
     changeFont(options.activeFont);
     changeShade(options.shade);
     $qs('.vertical-scroll-toggle').checked = options.allowVerticalScroll;
+
+    const savedLines = JSON.parse(window.localStorage.getItem(STORAGE_KEY_TEXT));
+    if (savedLines)
+        if (confirm('Restore previous session?'))
+            for (let line of savedLines)
+                addLine(line);
 };
