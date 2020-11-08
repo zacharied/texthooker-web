@@ -34,7 +34,7 @@ async function main() {
             await func();
             console.log(`${logText} DONE`);
         } catch (e) {
-            console.log(`${logText} ERROR: ${e.stack}`);
+            console.log(`${logText} ERROR:\n${e}`);
         }
     };
 
