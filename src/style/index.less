@@ -9,6 +9,9 @@
 
 @line-spacing: @unit-100;
 
+@background-color-light: #BCBCBC;
+@background-color-dark: #303030;
+
 html {
     overflow-y: scroll;
 }
@@ -19,10 +22,10 @@ body {
     font-size: 25px;
 
     &[data-shade="dark"] {
-        background-color: #303030;
+        background-color: @background-color-dark;
 
         #texthooker {
-            color: rgb(200, 200, 200, 0.5);
+            color: rgba(200, 200, 200, 0.4);
 
             .texthooker-line:last-child {
                 color: rgba(200, 200, 200, 0.9) !important;
@@ -31,10 +34,10 @@ body {
     }
 
     &[data-shade="light"] {
-        background-color: #BCBCBC;
+        background-color: @background-color-light;
 
         #texthooker {
-            color: rgba(0, 0, 0, 0.5);
+            color: rgba(0, 0, 0, 0.3);
 
             .texthooker-line:last-child {
                 color: rgba(0, 0, 0, 0.9) !important;
@@ -212,14 +215,14 @@ body {
 
     &[data-line-direction="up"] {
         .texthooker-line {
-            padding: @line-spacing 0;
+            padding: @line-spacing 6px;
         } 
         flex-direction: column-reverse;
     }
 
     &[data-line-direction="down"] {
         .texthooker-line {
-            padding: @line-spacing 0;
+            padding: @line-spacing 6px;
         } 
         flex-direction: column;
     }
@@ -228,7 +231,7 @@ body {
         .texthooker-line {
             // TODO Fix this hackiness.
             max-height: calc(~'100% - 52px - 57px');
-            padding: 0 @line-spacing;
+            padding: 6px @line-spacing;
 
             writing-mode: vertical-rl;
             text-orientation: upright;
@@ -240,7 +243,7 @@ body {
         .texthooker-line {
             // TODO Fix this hackiness.
             max-height: calc(~'100% - 52px - 57px');
-            padding: 0 @line-spacing;
+            padding: 6px @line-spacing;
 
             writing-mode: vertical-rl;
             text-orientation: upright;
@@ -267,9 +270,10 @@ body {
 
         position: relative;
 
-        color: #535353;
-
         > .line-delete {
+            cursor: pointer;
+            user-select: none;
+
             color: #535353;
             opacity: 0;
 
@@ -282,4 +286,12 @@ body {
             opacity: 1;
         }
     }
+}
+
+body[data-shade="dark"] .texthooker-line:hover {
+    background-color: lighten(@background-color-dark, 2%);
+}
+
+body[data-shade="light"] .texthooker-line:hover {
+    background-color: darken(@background-color-light, 4%);
 }
