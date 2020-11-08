@@ -5,6 +5,7 @@
 	<meta charset="utf-8"></meta>
 	<title>Texthooker</title>
 	<link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://unpkg.com/blaze">
 </head>
 
 <body>
@@ -38,6 +39,14 @@
 				<td>Allow vertical scroll</td>
 				<td><input class="vertical-scroll-toggle" type="checkbox"></input></td>
 			</tr>
+
+            <tr>
+                <td>Game</td>
+                <td>
+                    <select id="choose-game" onchange="onLogSelected(this)"><option></option></select>
+                    <button onclick="onAddLogClick()">Add</button>
+                </td>
+            </tr>
 		</table>
 	</div>
 

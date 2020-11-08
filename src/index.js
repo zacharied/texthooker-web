@@ -1,6 +1,7 @@
 const BOTTOM_SCROLL_LEEWAY = 200;
 const TIME_BETWEEN_LINES = 200;
 const STORAGE_KEY_TEXT = 'texthookerContent';
+const LOG_NAME_KEY_PREFIX = 'log_';
 
 const $id = id => document.getElementById(id);
 const $qs = selector => document.querySelector(selector);
@@ -20,8 +21,22 @@ var options = {
     lineDirection: 'down',
     allowVerticalScroll: true,
     activeFont: 'sans',
-    shade: 'dark'
+    shade: 'dark',
+    activeLog: null
 };
+
+const getLogLines = (logName) => {
+    if (logName.trim().length === 0)
+        return [];
+    const lines = window.localStorage.getItem(LOG_NAME_KEY_PREFIX + logName);
+    if (lines == null)
+        throw new Error(`invalid log "${logName}"`);
+    return JSON.parse(lines);
+}
+
+var logNames = Object.keys(window.localStorage)
+    .filter(k => k.startsWith(LOG_NAME_KEY_PREFIX))
+    .map(k => k.substring(LOG_NAME_KEY_PREFIX.length));
 
 if (window.localStorage.getItem('options')) {
     console.log('Restoring previously saved options.');
@@ -31,6 +46,31 @@ if (window.localStorage.getItem('options')) {
 }
 
 const fontClassName = (font) => `font-${font}`;
+
+function populateLines(logName) {
+    const lines = getLogLines(logName);
+
+    $id('texthooker').innerHTML = "";
+
+    for (let line of lines)
+        addLine(line);
+
+    updateCounter();
+}
+
+function addLogName(logName) {
+    let $c = $ce('option');
+    $c.text = logName;
+    $id('choose-game').add($c);
+}
+
+function populateLogNameSelection() {
+    for (const logName of logNames) {
+        addLogName(logName);
+        if (options.activeLog === logName)
+            $id('choose-game').options[$id('choose-game').options.length - 1].selected = 'selected';
+    }
+}
 
 function updateCounter(charCount = state.charCount, lineCount = state.lineCount) {
     $id('counter').textContent = `${charCount.toLocaleString()}字 / ${lineCount.toLocaleString()}行`;
@@ -157,6 +197,25 @@ document.scrollingElement.addEventListener('wheel', ev => {
     }
 });
 
+function onAddLogClick() {
+    const logName = prompt('New log name');
+
+    if (logName.trim().length === 0)
+        return;
+    if (logNames.includes(logName))
+        return;
+
+    logNames.push(logName);
+    addLogName(logName);
+    localStorage.setItem(LOG_NAME_KEY_PREFIX + logName, JSON.stringify([]));
+}
+
+function onLogSelected(select) {
+    options.activeLog = select.options[select.selectedIndex].value;
+    updateOptionsStorage();
+    populateLines(options.activeLog);
+}
+
 function onDeleteLineClicked(deleteButtonNode) {
     state.charCount -= deleteButtonNode.parentNode.$qs('.line-contents').textContent.length;
     state.lineCount -= 1;
@@ -211,11 +270,14 @@ const observer = new MutationObserver(function(mutationsList, observer) {
     state.lastLineTime = new Date();
 
     // Save to local storage.
-    let savedLines = JSON.parse(window.localStorage.getItem(STORAGE_KEY_TEXT));
-    if (savedLines == null)
-        savedLines = [];
-    savedLines.push(lineText);
-    window.localStorage.setItem(STORAGE_KEY_TEXT, JSON.stringify(savedLines));
+    if (options.activeLog != null) {
+        const keyName = LOG_NAME_KEY_PREFIX + options.activeLog;
+        let savedLines = JSON.parse(window.localStorage.getItem(keyName));
+        if (savedLines == null)
+            savedLines = [];
+        savedLines.push(lineText);
+        window.localStorage.setItem(keyName, JSON.stringify(savedLines));
+    }
 });
 
 observer.observe($id('texthooker'), {
@@ -232,6 +294,9 @@ document.onreadystatechange = ev => {
     let $hooktext = $id('texthooker');
     $hooktext.style.marginTop = `${$id('container').clientHeight + parseInt($style($hooktext).marginTop)}px`;
 
+    // Set up custom log selection.
+    populateLogNameSelection();
+
     // Initialize counter text.
     updateCounter();
 
@@ -240,9 +305,6 @@ document.onreadystatechange = ev => {
     changeShade(options.shade);
     $qs('.vertical-scroll-toggle').checked = options.allowVerticalScroll;
 
-    const savedLines = JSON.parse(window.localStorage.getItem(STORAGE_KEY_TEXT));
-    if (savedLines)
-        if (confirm('Restore previous session?'))
-            for (let line of savedLines)
-                addLine(line);
+    if (options.activeLog != null)
+        populateLines(options.activeLog);
 };

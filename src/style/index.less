@@ -1,3 +1,5 @@
+@import (css) url('https://unpkg.com/blaze');
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
 
@@ -114,10 +116,12 @@ body {
         }
 
         .choices {
+            &:extend(.c-input-group);
             display: flex;
         }
 
         .choices > .choice {
+            &:extend(.c-button--ghost);
             margin: 0 5px;
 
             &.active {
