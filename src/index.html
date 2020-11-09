@@ -8,54 +8,66 @@
 </head>
 
 <body>
+    <div class="c-overlay" id="modal-overlay" aria-hidden="true"></div>
+
 	<!-- Interactable UI / HUD container. -->
-	<div id="controls-container">
-		<table id="controls">
-			<tr>
-				<td>Shade</td>
-				<td class="choices choices-shades c-input-group">
-					<button class="choice notext c-button" data-shade="light"><span class="box"></span></button>
-					<button class="choice notext c-button" data-shade="dark"><span class="box"></span></button>
-					<button class="choice notext c-button" data-shade="sepia"><span class="box"></span></button>
-				</td>
-			</tr>
-			<tr>
-				<td>Font</td>
-				<td class="choices choices-fonts c-input-group">
-					<button class="choice c-button" data-font="sans">あ</button>
-					<button class="choice c-button" data-font="serif">あ</button>
-				</td>
-			</tr>
-			<tr>
-				<td>Line Direction</td>
-				<td class="choices choices-line-directions c-input-group">
-					<button class="choice c-button" data-direction="up">Up</button>
-					<button class="choice c-button" data-direction="down">Down</button>
-					<button class="choice c-button" data-direction="left">Left</button>
-					<button class="choice c-button" data-direction="right">Right</button>
-				</td>
-			</tr>
-			<tr class="sub-control control-vertical-scroll">
-				<td>Allow vertical scroll</td>
-				<td><input class="vertical-scroll-toggle" type="checkbox"></input></td>
-			</tr>
+	<div id="controls-container" class="o-modal" role="dialog">
+        <div class="c-card">
+            <header class="c-card__header">
+                <button id="controls-container-close" class="c-button c-button--close">×</button>
+                <h2 class="c-heading">Options</div>
+            </header>
+            <div class="c-card__body">
+                <table id="controls">
+                    <tr>
+                        <td>Shade</td>
+                        <td class="choices choices-shades c-input-group">
+                            <button class="choice notext c-button" data-shade="light"><span class="box"></span></button>
+                            <button class="choice notext c-button" data-shade="dark"><span class="box"></span></button>
+                            <button class="choice notext c-button" data-shade="sepia"><span class="box"></span></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Font</td>
+                        <td class="choices choices-fonts c-input-group">
+                            <button class="choice c-button" data-font="sans">あ</button>
+                            <button class="choice c-button" data-font="serif">あ</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Line Direction</td>
+                        <td class="choices choices-line-directions c-input-group">
+                            <button class="choice c-button" data-direction="up">Up</button>
+                            <button class="choice c-button" data-direction="down">Down</button>
+                            <button class="choice c-button" data-direction="left">Left</button>
+                            <button class="choice c-button" data-direction="right">Right</button>
+                        </td>
+                    </tr>
+                    <tr class="sub-control control-vertical-scroll">
+                        <td>Allow vertical scroll</td>
+                        <td><input class="vertical-scroll-toggle" type="checkbox"></input></td>
+                    </tr>
 
-            <tr>
-                <td>Text size</td>
-                <td class="control">
-                    <input type="range" id="text-size" class="text-size c-range">
-                    <label for="text-size" id="text-size-display"></label>
-                </td>
-            </tr>
+                    <tr>
+                        <td>Text size</td>
+                        <td class="control">
+                            <input type="range" id="text-size" class="text-size c-range">
+                            <label for="text-size" id="text-size-display"></label>
+                        </td>
+                    </tr>
 
-            <tr>
-                <td>Game</td>
-                <td>
-                    <select id="choose-game" onchange="onLogSelected(this)"><option></option></select>
-                    <button onclick="onAddLogClick()">Add</button>
-                </td>
-            </tr>
-		</table>
+                    <tr>
+                        <td>Game</td>
+                        <td class="control control-select c-input-group">
+                            <div class="o-field">
+                                <select id="choose-game" class="c-field u-small" onchange="onLogSelected(this)"><option></option></select>
+                            </div>
+                            <button class="c-button u-small" onclick="onAddLogClick()">Add</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 	</div>
 
 	<div id="container">

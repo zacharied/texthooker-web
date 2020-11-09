@@ -66,6 +66,11 @@ body {
     }
 }
 
+#modal-overlay {
+    opacity: 0.3;
+    z-index: 2;
+}
+
 #container {
     position: fixed;
     top: 0;
@@ -93,12 +98,7 @@ body {
 }
 
 #controls-container {
-    display: inline;
-    position: fixed;
-    z-index: 1;
-    visibility: collapse;
-    top: 46px;
-
+    width: auto;
     padding: @unit-100;
 
     background-color: white;
@@ -107,21 +107,7 @@ body {
 
     font-size: 11pt;
 
-    &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border: 12px solid transparent;
-        border-bottom-color: $background-color;
-        border-top: 0;
-        margin-left: -12px;
-        margin-top: -12px;
-    }
-
-    > table#controls {
+    table#controls {
         border-spacing: @unit-100 0;
 
         td:first-child {
@@ -132,6 +118,15 @@ body {
         .control {
             display: flex;
             align-items: center;
+
+            &.control-select .c-button.u-small {
+                // Manual fuckery to make this look right;
+                height: 33px;
+            }
+        }
+
+        .choices {
+            margin: 4px 0;
         }
 
         .choices > .choice:not(.active) {

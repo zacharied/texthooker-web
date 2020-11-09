@@ -130,7 +130,7 @@ function changeTextSize(size, updateSlider = false) {
 
     const range = TEXT_SIZE_PX_MAX - TEXT_SIZE_PX_MIN;
     const fontSize = Math.floor(TEXT_SIZE_PX_MIN + range * (options.textSize / 100));
-    document.body.style.fontSize = `${fontSize}pt`;
+    $id('texthooker').style.fontSize = `${fontSize}pt`;
     $id('text-size-display').textContent = `${fontSize}pt`;
 
     updateOptionsStorage();
@@ -183,16 +183,17 @@ $qs('.text-size').addEventListener('input', ev => {
     changeTextSize(ev.target.valueAsNumber);
 });
 
-// TODO Fix this hack somehow.
-var origMarginLeft = null;
 $id('options-button').addEventListener('click', ev => {
-    const $controls = $id('controls-container');
-    $controls.style.visibility = 'visible';
+    setShowOptionsModal(true);
+});
+
+$id('controls-container-close').addEventListener('click', _ => {
+    setShowOptionsModal(false);
 });
 
 document.addEventListener('click', ev => {
     if (ev.target.closest('#controls-container') == null && ev.target.id !== 'options-button') {
-        $id('controls-container').style.visibility = 'collapse';
+        setShowOptionsModal(false);
     }
 });
 
@@ -204,6 +205,19 @@ document.scrollingElement.addEventListener('wheel', ev => {
         ev.preventDefault();
     }
 });
+
+function setShowOptionsModal(show) {
+    const $overlay = $id('modal-overlay');
+    const $controls = $id('controls-container');
+
+    if (show === true) {
+        $overlay.classList.add('c-overlay--visible');
+        $controls.classList.add('o-modal--visible');
+    } else {
+        $overlay.classList.remove('c-overlay--visible');
+        $controls.classList.remove('o-modal--visible');
+    }
+}
 
 function onAddLogClick() {
     const logName = prompt('New log name');
