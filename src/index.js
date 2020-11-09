@@ -3,6 +3,9 @@ const TIME_BETWEEN_LINES = 200;
 const STORAGE_KEY_TEXT = 'texthookerContent';
 const LOG_NAME_KEY_PREFIX = 'log_';
 
+const TEXT_SIZE_PX_MIN = 12;
+const TEXT_SIZE_PX_MAX = 40;
+
 const $id = id => document.getElementById(id);
 const $qs = selector => document.querySelector(selector);
 const $qsa = selector => document.querySelectorAll(selector);
@@ -22,6 +25,7 @@ var options = {
     allowVerticalScroll: true,
     activeFont: 'sans',
     shade: 'dark',
+    textSize: 40,
     activeLog: null
 };
 
@@ -118,6 +122,20 @@ function changeShade(shade) {
     updateOptionsStorage();
 }
 
+function changeTextSize(size, updateSlider = false) {
+    options.textSize = size;
+
+    if (updateSlider)
+        $qs('.text-size').valueAsNumber = options.textSize;
+
+    const range = TEXT_SIZE_PX_MAX - TEXT_SIZE_PX_MIN;
+    const fontSize = Math.floor(TEXT_SIZE_PX_MIN + range * (options.textSize / 100));
+    document.body.style.fontSize = `${fontSize}pt`;
+    $id('text-size-display').textContent = `${fontSize}pt`;
+
+    updateOptionsStorage();
+}
+
 function updateOptionsStorage() {
     window.localStorage.setItem('options', JSON.stringify(options));
 }
@@ -161,25 +179,15 @@ $qs('.vertical-scroll-toggle').addEventListener('change', ev => {
     options.allowVerticalScroll = ev.target.checked;
 });
 
+$qs('.text-size').addEventListener('input', ev => {
+    changeTextSize(ev.target.valueAsNumber);
+});
+
 // TODO Fix this hack somehow.
 var origMarginLeft = null;
 $id('options-button').addEventListener('click', ev => {
-    let $controls = $id('controls-container');
-    let $button = $id('options-button');
+    const $controls = $id('controls-container');
     $controls.style.visibility = 'visible';
-    $controls.style.left = `${window.scrollX + $button.getBoundingClientRect().left + $button.offsetWidth / 2 - $controls.getBoundingClientRect().width / 2}px`;
-    if (parseInt($controls.style.left) < 0) {
-        let diff = -parseInt($controls.style.left) + parseInt($style($controls).paddingLeft);
-        $controls.style.left = `${parseInt($controls.style.left) + diff}px`;
-        let $afterStyle = getComputedStyle($controls, ':after');
-
-        // TODO Fix this awfulness.
-        if (!origMarginLeft)
-            origMarginLeft = parseInt($afterStyle.getPropertyValue('margin-left'));
-        let $tempStyle = document.head.appendChild($ce('style'));
-        $tempStyle.innerHTML = `#controls-container:after { margin-left: ${origMarginLeft - diff}px }`;
-    }
-    $controls.style.top = `${window.scrollY + $button.getBoundingClientRect().top + $id('container').clientHeight + (origMarginLeft ? -origMarginLeft : 0)}px`;
 });
 
 document.addEventListener('click', ev => {
@@ -303,6 +311,7 @@ document.onreadystatechange = ev => {
     changeLineDirection(options.lineDirection);
     changeFont(options.activeFont);
     changeShade(options.shade);
+    changeTextSize(options.textSize, true);
     $qs('.vertical-scroll-toggle').checked = options.allowVerticalScroll;
 
     if (options.activeLog != null)

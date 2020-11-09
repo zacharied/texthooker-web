@@ -1,9 +1,9 @@
-@import (css) url('https://unpkg.com/blaze');
+@import (less) url('https://unpkg.com/blaze@4.2.0/scss/dist/blaze.min.css');
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
 
-@color-control-box-size: 8px;
+@color-control-box-size: 14px;
 
 @unit-100: 12px;
 
@@ -11,6 +11,14 @@
 
 @background-color-light: #BCBCBC;
 @background-color-dark: #303030;
+@background-color-sepia: #FBF0D9;
+
+@text-color-sepia: #5F4B32;
+
+@keyframes pop-in {
+    0% { transform: scale(0.5); }
+    100% { transform: scale(1); }
+}
 
 html {
     overflow-y: scroll;
@@ -19,7 +27,7 @@ html {
 body {
     margin: 0;
 
-    font-size: 25px;
+    font-size: 25pt;
 
     &[data-shade="dark"] {
         background-color: @background-color-dark;
@@ -41,6 +49,18 @@ body {
 
             .texthooker-line:last-child {
                 color: rgba(0, 0, 0, 0.9) !important;
+            }
+        }
+    }
+
+    &[data-shade="sepia"] {
+        background-color: @background-color-sepia;
+
+        #texthooker {
+            color: fade(@text-color-sepia, 38%);
+
+            .texthooker-line:last-child {
+                color: @text-color-sepia !important;
             }
         }
     }
@@ -74,9 +94,10 @@ body {
 
 #controls-container {
     display: inline;
-    position: absolute;
+    position: fixed;
     z-index: 1;
     visibility: collapse;
+    top: 46px;
 
     padding: @unit-100;
 
@@ -85,9 +106,6 @@ body {
     border-radius: 5px;
 
     font-size: 11pt;
-
-    animation: pop-in 1s;
-    animation-fill-mode: forwards;
 
     &:after {
         content: '';
@@ -111,41 +129,13 @@ body {
             text-align: right;
         }
 
-        .choice {
-            display: inline-block;
-
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .choices {
-            &:extend(.c-input-group);
+        .control {
             display: flex;
+            align-items: center;
         }
 
-        .choices > .choice {
-            &:extend(.c-button--ghost);
-            margin: 0 5px;
-
-            &.active {
-                text-decoration: underline;
-            }
-
-            &:hover {
-                text-shadow: 0 0 10px #9d9d9d;
-            }
-
-            &.notext {
-                &.active {
-                    // TODO Fix this jank.
-                    padding: 4px 4px;
-                    border: 1px solid #535353;
-                }
-
-                &:hover {
-                    background-color: #AAAAAA;
-                }
-            }
+        .choices > .choice:not(.active) {
+            .c-button.c-button--ghost();
         }
 
         .choices-fonts > .choice {
@@ -165,7 +155,7 @@ body {
                 display: flex;
                 align-items: center;
 
-                padding: 5px 5px;
+                padding: 8px 8px;
 
                 > .box {
                     display: inline-block;
@@ -181,6 +171,10 @@ body {
 
                 &[data-shade="dark"] > .box {
                     background-color: black;
+                }
+
+                &[data-shade="sepia"] > .box {
+                    background-color: @background-color-sepia;
                 }
             }
         }
@@ -294,4 +288,8 @@ body[data-shade="dark"] .texthooker-line:hover {
 
 body[data-shade="light"] .texthooker-line:hover {
     background-color: darken(@background-color-light, 4%);
+}
+
+body[data-shade="sepia"] .texthooker-line:hover {
+    background-color: darken(@background-color-sepia, 4%);
 }
