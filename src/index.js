@@ -30,7 +30,7 @@ var options = {
 };
 
 const getLogLines = (logName) => {
-    if (logName.trim().length === 0)
+    if (logName == null || logName.trim().length === 0)
         return [];
     const lines = window.localStorage.getItem(LOG_NAME_KEY_PREFIX + logName);
     if (lines == null)
@@ -62,15 +62,19 @@ function populateLines(logName) {
     updateCounter();
 }
 
-function addLogName(logName) {
-    let $c = $ce('option');
-    $c.text = logName;
-    $id('choose-game').add($c);
-}
-
 function populateLogNameSelection() {
+    // Clear the select
+    $id('choose-game').options.length = 0;
+
+    $id('choose-game').options.add($ce('option'));
+    if (options.activeLog == null)
+        $id('choose-game').options[0].selected = 'selected';
+
     for (const logName of logNames) {
-        addLogName(logName);
+        let $c = $ce('option');
+        $c.text = logName;
+        $id('choose-game').add($c);
+
         if (options.activeLog === logName)
             $id('choose-game').options[$id('choose-game').options.length - 1].selected = 'selected';
     }
@@ -191,6 +195,61 @@ $id('controls-container-close').addEventListener('click', _ => {
     setShowOptionsModal(false);
 });
 
+$id('log-create-new').addEventListener('click', _ => {
+    const logName = prompt('New log name');
+
+    if (logName == null || logName.trim().length === 0)
+        return;
+    if (logNames.includes(logName))
+        return;
+
+    logNames.push(logName);
+    localStorage.setItem(LOG_NAME_KEY_PREFIX + logName, JSON.stringify([]));
+    options.activeLog = logName;
+
+    populateLogNameSelection();
+    populateLines(options.activeLog);
+});
+
+$id('log-edit-name').addEventListener('click', _ => {
+    const $select = $id('choose-game');
+    const oldLogName = $select.value;
+    const oldSelectIndex = $select.options.selectedIndex;
+
+    const logName = prompt('Name for this log', $select.value);
+
+    if (logName == null || logName.trim().length === 0)
+        return;
+    if (logNames.includes(logName))
+        return;
+
+    logNames[oldSelectIndex - 1] = logName;
+    const oldLines = localStorage.getItem(LOG_NAME_KEY_PREFIX + oldLogName);
+    localStorage.setItem(LOG_NAME_KEY_PREFIX + logName, oldLines);
+    localStorage.removeItem(LOG_NAME_KEY_PREFIX + oldLogName);
+    options.activeLog = logName;
+    updateOptionsStorage();
+
+    populateLogNameSelection();
+});
+
+$id('log-remove').addEventListener('click', _ => {
+    const $select = $id('choose-game');
+
+    const confirmed = confirm('Are you sure you want to delete this log?');
+    if (!confirmed)
+        return;
+
+    const logName = $select.value;
+    logNames.splice($select.options.selectedIndex - 1, 1);
+    localStorage.removeItem(LOG_NAME_KEY_PREFIX + logName);
+    options.activeLog = null;
+    updateOptionsStorage();
+
+    populateLogNameSelection();
+    populateLines(options.activeLog);
+});
+
 document.addEventListener('click', ev => {
     if (ev.target.closest('#controls-container') == null && ev.target.id !== 'options-button') {
         setShowOptionsModal(false);
@@ -217,19 +276,6 @@ function setShowOptionsModal(show) {
         $overlay.classList.remove('c-overlay--visible');
         $controls.classList.remove('o-modal--visible');
     }
-}
-
-function onAddLogClick() {
-    const logName = prompt('New log name');
-
-    if (logName.trim().length === 0)
-        return;
-    if (logNames.includes(logName))
-        return;
-
-    logNames.push(logName);
-    addLogName(logName);
-    localStorage.setItem(LOG_NAME_KEY_PREFIX + logName, JSON.stringify([]));
 }
 
 function onLogSelected(select) {
