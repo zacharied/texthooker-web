@@ -18,6 +18,7 @@ var state = {
     charCount: 0,
     lineCount: 0,
     lastLineTime: new Date(),
+    lineStreamStartPoint: 0
 };
 
 var options = {
@@ -285,9 +286,21 @@ function onLogSelected(select) {
 }
 
 function onDeleteLineClicked(deleteButtonNode) {
+    const $parent = deleteButtonNode.parentNode;
+    const $lineList = $parent.parentNode;
+
     state.charCount -= deleteButtonNode.parentNode.$qs('.line-contents').textContent.length;
     state.lineCount -= 1;
     updateCounter();
+
+    const index = state.lineStreamStartPoint + Array.prototype.slice.call($lineList.children).indexOf($parent);
+    if (options.activeLog != null) {
+        const keyName = LOG_NAME_KEY_PREFIX + options.activeLog;
+        let savedLines = JSON.parse(window.localStorage.getItem(keyName));
+        savedLines.splice(index, 1);
+        window.localStorage.setItem(keyName, JSON.stringify(savedLines));
+    }
+
     deleteButtonNode.parentNode.remove();
 }
 
