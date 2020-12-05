@@ -145,22 +145,6 @@ function updateOptionsStorage() {
     window.localStorage.setItem('options', JSON.stringify(options));
 }
 
-$id('remove-button').addEventListener('click', _ => {
-    // Check whether there are any lines.
-    if ($qsa('#texthooker > .texthooker-line').length < 1) return;
-
-    // Get last line.
-    let targetElement = $qs('#texthooker > .texthooker-line:last-child');
-
-    // Update the counter.
-    state.charCount = state.charCount - targetElement.$qs('.line-contents').textContent.length;
-    state.lineCount = state.lineCount - 1;
-    updateCounter();
-
-    // Remove the last line.
-    targetElement.remove();
-});
-
 $qs('.choices-line-directions').addEventListener('click', ev => {
     if (!ev.target.classList.contains('choice'))
         return;
