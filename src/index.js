@@ -385,9 +385,6 @@ const observer = new MutationObserver(function(mutationsList, observer) {
         return;
     }
 
-    if ($qs('#texthooker > p') == null)
-        return;
-
     // Lines getting added too quickly usually indicates some weirdness in the user's clipboard.
     if (new Date().getTime() - state.lastLineTime.getTime() < TIME_BETWEEN_LINES) {
         $qs('#texthooker > p:last-child').remove();
@@ -416,12 +413,35 @@ const observer = new MutationObserver(function(mutationsList, observer) {
         savedLines.push(lineText);
         window.localStorage.setItem(keyName, JSON.stringify(savedLines));
     }
+
+    populateTextStats();
 });
 
 observer.observe($id('texthooker'), {
     attributes: false,
     childList: true,
     subtree: true
+});
+
+const bodyObserver = new MutationObserver(function(mutationsList, observer) {
+    if (mutationsList.filter(record => {
+        for (let node of record.addedNodes)
+            if (node.tagName === 'P')
+                return true;
+    }).length === 0) {
+        return;
+    }
+
+    let $inserted = $qs('body > p:last-child');
+    const $newElement = document.createElement('P');
+    $newElement.textContent = $inserted.textContent;
+    $id('texthooker').appendChild($newElement);
+    $inserted.remove();
+});
+
+bodyObserver.observe(document.body, { 
+    childList: true,
+    subtree: false
 });
 
 document.onreadystatechange = ev => {
