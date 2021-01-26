@@ -18,7 +18,10 @@ var state = {
     charCount: 0,
     lineCount: 0,
     lastLineTime: new Date(),
-    lineStreamStartPoint: 0
+    lineStreamStartPoint: -1,
+    counterType: 'all',
+    sessionLines: 0,
+    sessionChars: 0
 };
 
 var options = {
@@ -52,15 +55,24 @@ if (window.localStorage.getItem('options')) {
 
 const fontClassName = (font) => `font-${font}`;
 
-function populateLines(logName) {
+function populateLines(logName, offset = 0, sessionLine = true) {
+    console.log(`Populating log ${logName}`);
+    if (logName !== options.activeLog)
+        $id('texthooker').innerHTML = "";
+
     const lines = getLogLines(logName);
 
-    $id('texthooker').innerHTML = "";
+    if (state.lineStreamStartPoint < 0)
+        state.lineStreamStartPoint = lines.length;
 
-    for (let line of lines)
-        addLine(line);
+    offset = Math.max(state.lineStreamStartPoint - offset, 0);
 
-    updateCounter();
+    for (let i = state.lineStreamStartPoint - 1; i >= offset; i--)
+        addLine(lines[i], true, sessionLine);
+    const addedLines = state.lineStreamStartPoint - offset;
+    state.lineStreamStartPoint = offset;
+
+    return addedLines;
 }
 
 function populateLogNameSelection() {
@@ -79,10 +91,6 @@ function populateLogNameSelection() {
         if (options.activeLog === logName)
             $id('choose-game').options[$id('choose-game').options.length - 1].selected = 'selected';
     }
-}
-
-function updateCounter(charCount = state.charCount, lineCount = state.lineCount) {
-    $id('counter').textContent = `${charCount.toLocaleString()}字 / ${lineCount.toLocaleString()}行`;
 }
 
 function changeLineDirection(direction) {
@@ -141,6 +149,11 @@ function changeTextSize(size, updateSlider = false) {
     updateOptionsStorage();
 }
 
+function populateCounterType() {
+    const counterTypeText = (state.counterType === 'all') ? '全行' : 'セッション';
+    $id('counter-type-selection').textContent = counterTypeText;
+}
+
 function updateOptionsStorage() {
     window.localStorage.setItem('options', JSON.stringify(options));
 }
@@ -190,10 +203,14 @@ $id('log-create-new').addEventListener('click', _ => {
 
     logNames.push(logName);
     localStorage.setItem(LOG_NAME_KEY_PREFIX + logName, JSON.stringify([]));
-    options.activeLog = logName;
 
+    populateLines(options.activeLog, 30);
+
+    options.activeLog = logName;
+    updateOptionsStorage();
     populateLogNameSelection();
-    populateLines(options.activeLog);
+
+    populateTextStats();
 });
 
 $id('log-edit-name').addEventListener('click', _ => {
@@ -228,11 +245,20 @@ $id('log-remove').addEventListener('click', _ => {
     const logName = $select.value;
     logNames.splice($select.options.selectedIndex - 1, 1);
     localStorage.removeItem(LOG_NAME_KEY_PREFIX + logName);
+
+    populateLines(null);
+
     options.activeLog = null;
     updateOptionsStorage();
-
     populateLogNameSelection();
-    populateLines(options.activeLog);
+
+    populateTextStats();
+});
+
+$id('counter-type-selection').addEventListener('click', _ => {
+    state.counterType = (state.counterType === 'all') ? 'session' : 'all';
+    populateCounterType();
+    populateTextStats();
 });
 
 document.addEventListener('click', ev => {
@@ -248,7 +274,38 @@ document.scrollingElement.addEventListener('wheel', ev => {
         ev.currentTarget.scrollLeft += ev.deltaY * 30;
         ev.preventDefault();
     }
+
+    if (options.lineDirection === 'down' && scrollY === 0 && ev.deltaY < 0) {
+        const addedLines = populateLines(options.activeLog, 20, false);
+        const $prevLastLine = $id('texthooker').childNodes[addedLines];
+        const scrollTarget = $prevLastLine.getBoundingClientRect().top - $id('container').clientHeight - parseInt($style($prevLastLine).paddingTop) * 2;
+        window.scrollTo(window.scrollX, scrollTarget);
+    }
 });
+
+function populateTextStats() {
+    let lines = 0;
+    let chars = 0;
+
+    if (state.counterType === 'all') {
+        if (options.activeLog == null) {
+            state.charCount = 0;
+            state.lineCount = 0;
+        } else {
+            const lines = getLogLines(options.activeLog);
+            state.charCount = lines.reduce((acc, cur) => acc + cur.length, 0);
+            state.lineCount = lines.length;
+        }
+
+        lines = state.lineCount;
+        chars = state.charCount;
+    } else {
+        lines = state.sessionLines;
+        chars = state.sessionChars;
+    }
+
+    $id('counter').textContent = `${chars.toLocaleString()}字 / ${lines.toLocaleString()}行`;
+}
 
 function setShowOptionsModal(show) {
     const $overlay = $id('modal-overlay');
@@ -264,9 +321,14 @@ function setShowOptionsModal(show) {
 }
 
 function onLogSelected(select) {
-    options.activeLog = select.options[select.selectedIndex].value;
+    const newLog = select.options[select.selectedIndex].value;
+
+    state.lineStreamStartPoint = -1;
+    populateLines(newLog, 30, false);
+    options.activeLog = newLog;
     updateOptionsStorage();
-    populateLines(options.activeLog);
+
+    populateTextStats();
 }
 
 function onDeleteLineClicked(deleteButtonNode) {
@@ -275,7 +337,7 @@ function onDeleteLineClicked(deleteButtonNode) {
 
     state.charCount -= deleteButtonNode.parentNode.$qs('.line-contents').textContent.length;
     state.lineCount -= 1;
-    updateCounter();
+    populateTextStats();
 
     const index = state.lineStreamStartPoint + Array.prototype.slice.call($lineList.children).indexOf($parent);
     if (options.activeLog != null) {
@@ -289,17 +351,28 @@ function onDeleteLineClicked(deleteButtonNode) {
 }
 
 /** Adds a new text line element to the end of the texthooker output. */
-function addLine(lineText) {
+function addLine(lineText, prepend = false, sessionLine = true) {
     let $newline = $id('tmpl-added-line').content.cloneNode(true).children[0];
     let $newlineText = $newline.$qs('.line-contents');
     $newlineText.innerHTML = lineText.replace(/<br>/, '\u2002');
     $newlineText.textContent = $newlineText.textContent.trim();
-    $id('texthooker').appendChild($newline);
+
+    if (prepend)
+        $id('texthooker').prepend($newline);
+    else
+        $id('texthooker').appendChild($newline);
+
+    if (sessionLine) {
+        state.sessionLines += 1;
+        state.sessionChars += $newline.$qs('.line-contents').textContent.length;
+    }
 
     // Print the new counts into the counter.
-    state.lineCount = $qsa('#texthooker > .texthooker-line').length;
-    state.charCount += $newline.$qs('.line-contents').textContent.length;
-    updateCounter();
+    if (!prepend) {
+        state.lineCount = $qsa('#texthooker > .texthooker-line').length;
+        state.charCount += $newline.$qs('.line-contents').textContent.length;
+        populateTextStats();
+    }
 }
 
 const observer = new MutationObserver(function(mutationsList, observer) {
@@ -363,7 +436,8 @@ document.onreadystatechange = ev => {
     populateLogNameSelection();
 
     // Initialize counter text.
-    updateCounter();
+    populateTextStats();
+    populateCounterType();
 
     changeLineDirection(options.lineDirection);
     changeFont(options.activeFont);
@@ -371,6 +445,8 @@ document.onreadystatechange = ev => {
     changeTextSize(options.textSize, true);
     $qs('.vertical-scroll-toggle').checked = options.allowVerticalScroll;
 
-    if (options.activeLog != null)
-        populateLines(options.activeLog);
+    if (options.activeLog != null) {
+        populateLines(options.activeLog, 30, false);
+        populateTextStats();
+    }
 };
